@@ -1,2 +1,2 @@
-public class Node_3 {
+public class Node_3 extends Node {
 }
