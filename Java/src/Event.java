@@ -29,7 +29,7 @@ public class Event {
 
     public boolean setType(int n)
     {
-        if ((n != NetworkSimulator.FROMLAYER2) &&
+        if ((n != NetworkSimulator.FROMNODE) &&
                 (n != NetworkSimulator.LINKCHANGE))
         {
             type = -1;

@@ -16,7 +16,7 @@ public class Main {
         BufferedReader stdIn = new BufferedReader(
                 new InputStreamReader(System.in));
 
-        System.out.println("Network :");
+        System.out.println("Distance Vector Routing :");
 
         //get trace from user
         while (trace < 0)
