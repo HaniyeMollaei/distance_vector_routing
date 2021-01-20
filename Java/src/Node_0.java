@@ -1,9 +1,12 @@
 public class Node_0 extends Node {
 
-    int[][] distanceTable = new int[NetworkSimulator.NUMNODES]
-            [NetworkSimulator.NUMNODES];
-    Boolean[] neighbors = new Boolean[NetworkSimulator.NUMNODES];
+    int[][] distanceTable ;
+    Boolean[] neighbors ;
 
+    public Node_0(){
+       distanceTable = new int[NetworkSimulator.NUMNODES][NetworkSimulator.NUMNODES];
+        neighbors = new Boolean[NetworkSimulator.NUMNODES];
+    }
     public void rtinit() {
         // Initialize distance table to INFINITY and neighbors array to NO for all edges
         int i, j;
@@ -37,7 +40,7 @@ public class Node_0 extends Node {
         int destDistance = distanceTable[0][pkt.getSource()];
 
         // Only want to send out new packets once, so wait until loop is finished
-        Boolean changedFlag = false;
+        boolean changedFlag = false;
 
 
         for (int i = 0; i < NetworkSimulator.NUMNODES; i++) {
@@ -60,15 +63,13 @@ public class Node_0 extends Node {
 
         // Send RoutePackets to all neighbors
         for (int i = 0; i < NetworkSimulator.NUMNODES; i++) {
-            if (!neighbors[i]) continue;
+            if (!neighbors[i]  || i == 0) continue;
 
             System.out.println("node 0 sends packet to node" + i +"with: "+ distanceTable[0][0]+" "+
                     distanceTable[0][1]+" "+ distanceTable[0][2]+" "+  distanceTable[0][3] );
             // Create and initialize route packet structure, except for destid.
             int[] minCosts = new int[NetworkSimulator.NUMNODES];
-            for (int j = 0 ; j < NetworkSimulator.NUMNODES ; j++ ){
-                minCosts[j]= distanceTable[0][j];
-            }
+            System.arraycopy(distanceTable[0], 0, minCosts, 0, NetworkSimulator.NUMNODES);
             Packet pkt = new Packet(0 , i , minCosts);
 
             //TODO
