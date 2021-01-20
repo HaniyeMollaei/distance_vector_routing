@@ -21,6 +21,7 @@ public class NetworkSimulator {
     public Node[] nodes;
     public static int[][] cost;
     private static double time;
+    public static Boolean[] activeNodes;
 
     Node n0;
     Node n1;
@@ -59,11 +60,24 @@ public class NetworkSimulator {
         n3 = new Node_3();
 
         nodes = new Node[] {n0 , n1 , n2 , n3};
+        activeNodes = new Boolean[NUMNODES];
+        activeNodes[0]=false;
+        activeNodes[1]=false;
+        activeNodes[2]=false;
+        activeNodes[3]=false;
 
         n0.rtinit();
+        activeNodes[0]=true;
+
         n1.rtinit();
+        activeNodes[1]=true;
+
         n2.rtinit();
+        activeNodes[2]=true;
+
         n3.rtinit();
+        activeNodes[3]=true;
+
 
         if (linkChanges)
             eventList.add(new Event(10000.0, LINKCHANGE, 0));
@@ -124,6 +138,10 @@ public class NetworkSimulator {
             }
         }
 
+        for (int i = 0 ; i < NUMNODES ; i++){
+            nodes[i].printDT();
+            System.out.println();
+        }
         System.out.println("Simulator terminated at t=" + time +
                 ", no packets in medium.");
     }
@@ -158,7 +176,7 @@ public class NetworkSimulator {
 
         if (traceLevel > 2)
         {
-            System.out.println("toNode(): source=" + p.getSource() +
+            System.out.println("             toNode(): source=" + p.getSource() +
                     " dest=" + p.getDest());
             System.out.print("             costs:");
             for (int i = 0; i < NUMNODES; i++)

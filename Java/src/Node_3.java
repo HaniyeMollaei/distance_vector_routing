@@ -45,6 +45,11 @@ public class Node_3 extends Node {
 
 
         for (int i = 0; i < NetworkSimulator.NUMNODES; i++) {
+            if (pkt.getMincost(i) != distanceTable[pkt.getSource()][i])
+                distanceTable[pkt.getSource()][i]=pkt.getMincost(i);
+        }
+
+        for (int i = 0; i < NetworkSimulator.NUMNODES; i++) {
             int oldDistance = distanceTable[3][i];
             int newDistance = destDistance + pkt.getMincost(i);
             if (newDistance < oldDistance) {
@@ -62,11 +67,11 @@ public class Node_3 extends Node {
 
     public void sendRoutePackets() {
 
-        // Send RoutePackets to all neighbors
+        // Send RouterPackets to all neighbors
         for (int i = 0; i < NetworkSimulator.NUMNODES; i++) {
-            if (!neighbors[i]  || i == 3) continue;
+            if (!neighbors[i]  || i == 3 || !NetworkSimulator.activeNodes[i]) continue;
 
-            System.out.println("node 3 sends packet to node" + i +"with: "+ distanceTable[3][0]+" "+
+            System.out.println("node 3 sends packet to node " + i +" with: "+ distanceTable[3][0]+" "+
                     distanceTable[3][1]+" "+ distanceTable[3][2]+" "+  distanceTable[3][3] );
             // Create and initialize route packet structure, except for destid.
             int[] minCosts = new int[NetworkSimulator.NUMNODES];
@@ -79,13 +84,12 @@ public class Node_3 extends Node {
     public void printDT()
     {
         System.out.println();
-        System.out.println("           via");
-        System.out.println(" D0 |   1   2   3");
-        System.out.println("----+------------");
-        for (int i = 1; i < NetworkSimulator.NUMNODES; i++)
+        System.out.println(" D3 |   0   1   2   3");
+        System.out.println("----+----------------");
+        for (int i = 0; i < NetworkSimulator.NUMNODES; i++)
         {
             System.out.print("   " + i + "|");
-            for (int j = 1; j < NetworkSimulator.NUMNODES; j++)
+            for (int j = 0; j < NetworkSimulator.NUMNODES; j++)
             {
                 if (distanceTable[i][j] < 10)
                 {
