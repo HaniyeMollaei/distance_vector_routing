@@ -2,14 +2,14 @@ public class Event {
 
     private double time;
     private int type;
-    private int entity;
+    private int node;
     private Packet packet;
 
     public Event(double t, int ty, int ent)
     {
         time = t;
         type = ty;
-        entity = ent;
+        node = ent;
         packet = null;
     }
 
@@ -17,7 +17,7 @@ public class Event {
     {
         time = t;
         type = ty;
-        entity = ent;
+        node = ent;
         packet = new Packet(p);
     }
 
@@ -45,11 +45,11 @@ public class Event {
         if ((n < 0) ||
                 (n >= NetworkSimulator.NUMNODES))
         {
-            entity = -1;
+            node = -1;
             return false;
         }
 
-        entity = n;
+        node = n;
         return true;
     }
 
@@ -79,7 +79,7 @@ public class Event {
 
     public int getNode()
     {
-        return entity;
+        return node;
     }
 
     public Packet getPacket()
@@ -89,7 +89,7 @@ public class Event {
 
     public String toString()
     {
-        return("time: " + time + "  type: " + type + "  entity: " + entity +
+        return("time: " + time + "  type: " + type + "  entity: " + node +
                 "packet: " + packet);
     }
 }

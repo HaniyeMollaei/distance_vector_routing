@@ -1,11 +1,14 @@
 import java.util.Random;
 
 public class NetworkSimulator {
+
+    public static final int INFINITY = 999;
+
     // This is the number of nodes in the simulator
     public static final int NUMNODES = 4;
 
     // These constants are possible events
-    public static final int FROMLAYER2 = 0;
+    public static final int FROMNODE = 0;
     public static final int LINKCHANGE = 1;
 
     // Parameters of the simulation
@@ -15,10 +18,14 @@ public class NetworkSimulator {
     private static Random rand;
 
     // Data used for the simulation
-    private Node[] nodes;
+    public Node[] nodes;
     public static int[][] cost;
     private static double time;
 
+    Node n0;
+    Node n1;
+    Node n2;
+    Node n3;
     // Initializes the simulator
     public NetworkSimulator(boolean hasLinkChange, int trace, long seed)
     {
@@ -46,16 +53,21 @@ public class NetworkSimulator {
         cost[3][2] = 2;
         cost[3][3] = 0;
 
-        nodes = new Node[NUMNODES];
-        nodes[0] = new Node_0();
-        nodes[1] = new Node_1();
-        nodes[2] = new Node_2();
-        nodes[3] = new Node_3();
+        n0 = new Node_0();
+        n1 = new Node_1();
+        n2 = new Node_2();
+        n3 = new Node_3();
+
+        nodes = new Node[] {n0 , n1 , n2 , n3};
+
+        n0.rtinit();
+        n1.rtinit();
+        n2.rtinit();
+        n3.rtinit();
 
         if (linkChanges)
-        {
             eventList.add(new Event(10000.0, LINKCHANGE, 0));
-        }
+
 
     }
 
@@ -71,27 +83,24 @@ public class NetworkSimulator {
             next = eventList.removeNext();
 
             if (next == null)
-            {
                 break;
-            }
 
             if (traceLevel > 1)
             {
                 System.out.println();
-                System.out.println("main(): event received.  t=" +
-                        next.getTime() +", node=" +
-                        next.getNode());
-                if (next.getType() == FROMLAYER2)
+                System.out.println("main(): event received.  t=" + next.getTime() +", node=" + next.getNode());
+
+                if (next.getType() == FROMNODE)
                 {
                     p = next.getPacket();
+
                     System.out.print("  src=" + p.getSource() + ", ");
                     System.out.print("dest=" + p.getDest() + ", ");
                     System.out.print("contents=[");
                     for (int i = 0; i < NUMNODES - 1; i++)
-                    {
                         System.out.print(p.getMincost(i) + ", ");
-                    }
                     System.out.println(p.getMincost(NUMNODES - 1) + "]");
+
                 }
                 else if (next.getType() == LINKCHANGE)
                 {
@@ -101,34 +110,13 @@ public class NetworkSimulator {
 
             time = next.getTime();
 
-            if (next.getType() == FROMLAYER2)
+            if (next.getType() == FROMNODE)
             {
                 p = next.getPacket();
                 if ((next.getNode() < 0) || (next.getNode() >= NUMNODES))
-                {
                     System.out.println("main(): Panic. Unknown event node.");
-                }
                 else
-                {
-                    nodes[next.getNode()].update(p);
-                }
-            }
-            else if (next.getType() == LINKCHANGE)
-            {
-                if (time < 10001.0)
-                {
-                    cost[0][1] = 20;
-                    cost[1][0] = 20;
-                    nodes[0].linkCostChangeHandler(1, 20);
-                    nodes[1].linkCostChangeHandler(0, 20);
-                }
-                else
-                {
-                    cost[0][1] = 1;
-                    cost[1][0] = 1;
-                    nodes[0].linkCostChangeHandler(1, 1);
-                    nodes[1].linkCostChangeHandler(0, 1);
-                }
+                    nodes[next.getNode()].rtupdate(p);
             }
             else
             {
@@ -141,40 +129,36 @@ public class NetworkSimulator {
     }
 
 
-    public static void toLayer2(Packet p)
+    public static void toNode(Packet p)
     {
         Packet currentPacket;
         double arrivalTime;
 
         if ((p.getSource() < 0) || (p.getSource() >= NUMNODES))
         {
-            System.out.println("toLayer2(): WARNING: Illegal source id in " +
-                    "packet; ignoring.");
+            System.out.println("WARNING: Illegal source id in packet; ignoring.");
             return;
         }
         if ((p.getDest() < 0) || (p.getDest() >= NUMNODES))
         {
-            System.out.println("toLayer2(): WARNING: Illegal destination id " +
-                    "in packet; ignoring.");
+            System.out.println("WARNING: Illegal destination id in packet; ignoring.");
             return;
         }
         if (p.getSource() == p.getDest())
         {
-            System.out.println("toLayer2(): WARNING: Identical source and " +
-                    "destination in packet; ignoring.");
+            System.out.println("WARNING: Identical source and destination in packet; ignoring.");
             return;
         }
         if (cost[p.getSource()][p.getDest()] == 999)
         {
-            System.out.println("toLayer2(): WARNING: Source and destination " +
-                    "not connected; ignoring.");
+            System.out.println("WARNING: Source and destination not connected; ignoring.");
             return;
         }
 
 
         if (traceLevel > 2)
         {
-            System.out.println("toLayer2(): source=" + p.getSource() +
+            System.out.println("toNode(): source=" + p.getSource() +
                     " dest=" + p.getDest());
             System.out.print("             costs:");
             for (int i = 0; i < NUMNODES; i++)
@@ -193,11 +177,11 @@ public class NetworkSimulator {
 
         if (traceLevel > 2)
         {
-            System.out.println("toLayer2(): Scheduling arrival of packet.");
+            System.out.println("toNode(): Scheduling arrival of packet.");
         }
 
         currentPacket = new Packet(p);
-        eventList.add(new Event(arrivalTime, FROMLAYER2,
+        eventList.add(new Event(arrivalTime, FROMNODE,
                 currentPacket.getDest(), currentPacket));
     }
 }

@@ -44,14 +44,14 @@ public class EventListImpl implements EventList
         return data.toString();
     }
     
-    public double getLastPacketTime(int nodeFrom, int entityTo)
+    public double getLastPacketTime(int nodeFrom, int nodeTo)
     {
         double time = 0.0;
         for (int i = 0; i < data.size(); i++)
         {
             if ((((Event)(data.elementAt(i))).getType() == 
                                            NetworkSimulator.FROMNODE) &&
-                (((Event)(data.elementAt(i))).getNode() == entityTo) &&
+                (((Event)(data.elementAt(i))).getNode() == nodeTo) &&
                 (((Event)(data.elementAt(i))).getPacket().getSource() ==
                                            nodeFrom)
                )
